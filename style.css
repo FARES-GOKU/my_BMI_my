@@ -1,0 +1,70 @@
+<html><head><style type="text/css" id="dcoder_stylesheet">/* تنسيق عام */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #001f3f, #004080);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* تنسيق الحاوية */
+.container {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 30px;
+    width: 350px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+/* تنسيق المدخلات */
+.input-group {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* زر الحساب */
+button {
+    background-color: #FFD700;
+    color: black;
+    padding: 12px;
+    width: 90%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #FFC107;
+}
+
+/* تأثير ظهور النتيجة */
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.show {
+    opacity: 1;
+}
+
+/* مربع الحالة */
+.status-box {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid #FFD700;
+}</style></head><body></body></html>
