@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة مؤشر كتلة الجسم (BMI)</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<style type="text/css" id="dcoder_stylesheet">/* خلفية وتأثير عام */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #001f3f, #004080);
+    margin: 0;
+    padding: 0;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* صندوق الإدخال */
+.container {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 30px;
+    width: 350px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* تحسين المسافات بين العناصر */
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* تنسيق الحقول */
+label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+    border-color: #FFD700;
+    box-shadow: 0px 0px 10px #FFD700;
+}
+
+/* زر الحساب */
+button {
+    background-color: #FFD700;
+    color: black;
+    padding: 12px;
+    width: 90%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 15px; /* إضافة مسافة بين الزر والعناصر الأخرى */
+}
+
+button:hover {
+    background-color: #FFC107;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* زر الحساب - تعطيل مؤقت أثناء تحميل البيانات */
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* تأثير عرض النتيجة */
+.fade-in {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* يظهر التأثير عندما يتم عرض النتيجة */
+.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* مربع الحالة */
+.status-box {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid #FFD700;
+    color: white;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* الرسالة */
+.message {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* تأثير التلاشي */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}</style></head>
+<body>
+
+    <div class="container">
+        <h2><i class="fas fa-weight"></i> حاسبة مؤشر كتلة الجسم (BMI)</h2>
+
+        <div class="input-group">
+            <label for="weight">الوزن (كجم):</label>
+            <input type="number" id="weight" placeholder="أدخل وزنك" required oninput="addGlow(this)">
+        </div>
+
+        <div class="input-group">
+            <label for="height">الطول (متر):</label>
+            <input type="number" id="height" placeholder="أدخل طولك" step="0.01" required oninput="addGlow(this)">
+        </div>
+
+        <button onclick="calculateBMI()" id="calculate-btn">🔥 حساب BMI 🔥</button>
+
+        <div id="result" class="fade-in"></div>
+        <div class="status-box" id="status-box" style="display:none;">
+            <div id="status-message" class="message"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+
+
+<script type="text/javascript" id="dcoder_script">function calculateBMI() {
+    let weight = parseFloat(document.getElementById("weight").value);
+    let height = parseFloat(document.getElementById("height").value);
+    let resultBox = document.getElementById("result");
+    let statusBox = document.getElementById("status-box");
+    let statusMessage = document.getElementById("status-message");
+    let calculateBtn = document.getElementById("calculate-btn");
+
+    // تعطيل الزر مؤقتًا أثناء تحميل النتيجة
+    calculateBtn.disabled = true;
+    calculateBtn.innerText = "⏳ جاري الحساب...";
+
+    // التحقق من صحة الإدخال
+    if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
+        alert("⚠ الرجاء إدخال قيم صحيحة للوزن والطول.");
+        resetButton();
+        return;
+    }
+
+    let apiUrl = `http://127.0.0.1:8000/calculate_bmi?weight=${weight}&height=${height}`;
+
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("⚠ فشل الاتصال بالخادم.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.bmi || !data.message) {
+                throw new Error("⚠ استجابة غير صالحة من API.");
+            }
+
+            let bmi = data.bmi.toFixed(2);
+            let message = data.message;
+
+            // تحديث واجهة النتيجة
+            resultBox.innerHTML = `<p><strong>BMI:</strong> ${bmi}</p>`;
+            resultBox.classList.add("show");
+
+            statusMessage.innerText = message;
+            statusBox.style.display = "block";
+
+            resetButton();
+        })
+        .catch(error => {
+            console.error("خطأ:", error);
+            resultBox.innerHTML = "⚠ حدث خطأ، تأكد من تشغيل API بشكل صحيح.";
+            resetButton();
+        });
+}
+
+// وظيفة لإعادة تعيين الزر بعد الانتهاء
+function resetButton() {
+    let calculateBtn = document.getElementById("calculate-btn");
+    calculateBtn.disabled = false;
+    calculateBtn.innerText = "🔥 حساب BMI 🔥";
+}
+
+// تأثير عند الكتابة في الحقول
+function addGlow(inputField) {
+    inputField.classList.add("glow");
+    setTimeout(() => {
+        inputField.classList.remove("glow");
+    }, 300);
+}</script></body></html> 
